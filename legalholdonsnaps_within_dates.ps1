@@ -1,6 +1,6 @@
 #This script applies legal hold on snaps between specific dates for one snappable FID. Modify line 110 and 111 as required date and time. Modify line 106 to provide snappale FID.
 
-# Import Service Account Info
+# Import Service Account Info (For Windows path: C:\Users\Username\Desktop\File.json)
 $ServiceAccountFilePath = "/Users/Deepender.Singh/Downloads/deepender.json"
 $ServiceAccount = Get-Content $ServiceAccountFilePath | ConvertFrom-Json
 
