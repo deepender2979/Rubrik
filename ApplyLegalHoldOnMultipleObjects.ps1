@@ -1,9 +1,14 @@
 # This script applies legal hold on all snapshots for snappable FIDs read from provided file
+<<<<<<< HEAD
 <<<<<<< HEAD:ApplyLegalHoldOnMultipleObjects.ps1
 # Modify Line 11, 49 and 113 as required.
 # You will need a service account created with Administrator role and please set the execution policy on your system running powershell as required.
 =======
 >>>>>>> f93fc50447e9e820133a1b0f1571037ed5b49afd:snappableidFromFile_legal_hold_on_all_snaps.ps1
+=======
+# Modify Line 11, 49 and 113 as required.
+# You will need a service account created with Administrator role and please set the execution policy on your system running powershell as required.
+>>>>>>> a42de6c672d13bf679cee76fbd9b0fb6796d79b0
 
 #create a file with snappable IDs in new lines- snappableIds.txt
 #eb4572df-1bdb-5641-929b-f232bf2d0cb0

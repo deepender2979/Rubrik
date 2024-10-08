@@ -1,6 +1,7 @@
 # This script applies legal hold on specified date snapshots for snappable FIDs read from a provided file. 
 # Modify line 11, 51, 125, 129 and 130 as required.
 # You will need a service account created with Administrator role and please set the execution policy on your system running powershell as required.
+<<<<<<< HEAD
 
 # Create a file with snappable IDs in new line - snappableIds.txt
 # eb4572df-1bdb-5641-929b-f232bf2d0cb0
@@ -14,7 +15,13 @@
 #another-snappable-id
 #another-snappable-id
 
+=======
+>>>>>>> a42de6c672d13bf679cee76fbd9b0fb6796d79b0
 
+# Create a file with snappable IDs in new line - snappableIds.txt
+# eb4572df-1bdb-5641-929b-f232bf2d0cb0
+# another-snappable-id
+# another-snappable-id
 
 >>>>>>> f93fc50447e9e820133a1b0f1571037ed5b49afd:snppableidFromFile_legal_hold_specific_snapshots.ps1
 # Import Service Account Info (For Windows path: C:\Users\Username\Desktop\File.json)
