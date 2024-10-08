@@ -7,6 +7,16 @@
 # another-snappable-id
 # another-snappable-id
 
+<<<<<<< HEAD:ApplyLegalHoldOnMultipleObjectsWithinSpecificDates.ps1
+=======
+#create a file with snappable IDs in new line - snappableIds.txt
+#eb4572df-1bdb-5641-929b-f232bf2d0cb0
+#another-snappable-id
+#another-snappable-id
+
+
+
+>>>>>>> f93fc50447e9e820133a1b0f1571037ed5b49afd:snppableidFromFile_legal_hold_specific_snapshots.ps1
 # Import Service Account Info (For Windows path: C:\Users\Username\Desktop\File.json)
 $ServiceAccountFilePath = "/Users/Deepender.Singh/Downloads/deepender.json"
 $ServiceAccount = Get-Content $ServiceAccountFilePath | ConvertFrom-Json
