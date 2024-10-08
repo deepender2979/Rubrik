@@ -1,15 +1,13 @@
-# This script applies legal hold on date specified snapshots for snppable FIDs read from provided file, Modify line 111 to descibe the path of snappable FID file. 
-# Modify line 118 and 119 as per your required date and time.
+# This script applies legal hold on all snapshots for snappable FIDs read from provided file
+# Modify Line 11, 49 and 113 as required.
+# You will need a service account created with Administrator role and please set the execution policy on your system running powershell as required.
 
-
-#create a file with snappable IDs in new line - snappableIds.txt
+#create a file with snappable IDs in new lines- snappableIds.txt
 #eb4572df-1bdb-5641-929b-f232bf2d0cb0
 #another-snappable-id
 #another-snappable-id
 
-
-
-# Import Service Account Info
+# Import Service Account Info(For Windows path: C:\Users\Username\Desktop\File.json)
 $ServiceAccountFilePath = "/Users/Deepender.Singh/Downloads/deepender.json"
 $ServiceAccount = Get-Content $ServiceAccountFilePath | ConvertFrom-Json
 
@@ -112,12 +110,8 @@ mutation PlaceOnLegalHoldMutation(`$snapshotFids: [String!]!, `$shouldHoldInPlac
 }
 
 # Read snappable IDs from a text file
-$snappableIdsFilePath = "/path/to/snappableIds.txt"
+$snappableIdsFilePath = "/Users/Deepender.Singh/Downloads/snappableIds.txt"
 $snappableIds = Get-Content $snappableIdsFilePath
-
-# Define the date range for filtering
-$startDate = Get-Date "2024-05-19T00:00:00Z"
-$endDate = Get-Date "2024-05-23T23:59:59Z"
 
 # Iterate over each snappable ID
 foreach ($snappableId in $snappableIds) {
@@ -126,26 +120,21 @@ foreach ($snappableId in $snappableIds) {
     # Retrieve snapshot FIDs and dates for the current snappable ID
     $snapshots = Get-SnapshotFids -snappableId $snappableId -Headers $headers
 
-    # Filter snapshots based on the date range
-    $filteredSnapshots = $snapshots | Where-Object {
-        ($_.date -ge $startDate) -and ($_.date -le $endDate)
-    }
-
-    # Output the filtered snapshot details
-    foreach ($snapshot in $filteredSnapshots) {
+    # Output the snapshot details
+    foreach ($snapshot in $snapshots) {
         Write-Output "Snapshot ID: $($snapshot.id), Date: $($snapshot.date)"
     }
 
-    # Extract filtered snapshot IDs for the mutation
-    $snapshotFids = $filteredSnapshots | ForEach-Object { $_.id }
+    # Extract snapshot IDs for the mutation
+    $snapshotFids = $snapshots | ForEach-Object { $_.id }
 
-    # Place the snapshots on legal hold if there are any filtered snapshots
+    # Place the snapshots on legal hold if there are any snapshots
     if ($snapshotFids.Count -gt 0) {
         $legalHoldResult = Place-OnLegalHold -snapshotFids $snapshotFids -shouldHoldInPlace $true -userNote "" -Headers $headers
         # Output the result
         Write-Output "Legal hold applied for snappable ID: $snappableId"
         Write-Output "Result: $($legalHoldResult)"
     } else {
-        Write-Output "No snapshots found in the specified date range for snappable ID: $snappableId"
+        Write-Output "No snapshots found for snappable ID: $snappableId"
     }
 }

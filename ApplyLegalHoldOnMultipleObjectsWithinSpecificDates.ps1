@@ -1,11 +1,13 @@
-# This script applies legal hold on all snapshots for snppable FIDs read from provided file, Modify line 111 to descibe the path of snappable FID file.
+# This script applies legal hold on specified date snapshots for snappable FIDs read from a provided file. 
+# Modify line 11, 51, 125, 129 and 130 as required.
+# You will need a service account created with Administrator role and please set the execution policy on your system running powershell as required.
 
-#create a file with snappable IDs in new lines- snappableIds.txt
-#eb4572df-1bdb-5641-929b-f232bf2d0cb0
-#another-snappable-id
-#another-snappable-id
+# Create a file with snappable IDs in new line - snappableIds.txt
+# eb4572df-1bdb-5641-929b-f232bf2d0cb0
+# another-snappable-id
+# another-snappable-id
 
-# Import Service Account Info
+# Import Service Account Info (For Windows path: C:\Users\Username\Desktop\File.json)
 $ServiceAccountFilePath = "/Users/Deepender.Singh/Downloads/deepender.json"
 $ServiceAccount = Get-Content $ServiceAccountFilePath | ConvertFrom-Json
 
@@ -26,7 +28,7 @@ $bodyJson = $body | ConvertTo-Json
 $response = Invoke-RestMethod -Uri $ServiceAccount.access_token_uri -Method Post -Body $bodyJson -Headers $headers -UseBasicParsing
 
 # Debug output to check the response
-Write-Output "Access Token Response: $response"
+Write-Output "Access Token Response: $($response | ConvertTo-Json -Compress)"
 
 # Add access token to headers
 $headers["Authorization"] = "Bearer $($response.access_token)"
@@ -44,7 +46,12 @@ function Invoke-GraphQL {
         variables = $Variables
     } | ConvertTo-Json
 
+    Write-Output "GraphQL Payload: $($payload | ConvertTo-Json -Compress)"
+
     $response = Invoke-RestMethod -Uri "https://rubrik-support.my.rubrik.com/api/graphql" -Method Post -Body $payload -ContentType "application/json" -Headers $Headers -UseBasicParsing
+
+    # Debug output to check the GraphQL response
+    Write-Output "GraphQL Response: $($response | ConvertTo-Json -Compress)"
 
     return $response.data
 }
@@ -103,7 +110,12 @@ mutation PlaceOnLegalHoldMutation(`$snapshotFids: [String!]!, `$shouldHoldInPlac
         userNote = $userNote
     }
 
+    Write-Output "Applying legal hold with the following variables: $($legalHoldVariables | ConvertTo-Json -Compress)"
+
     $legalHoldResult = Invoke-GraphQL -Query $legalHoldMutation -Variables $legalHoldVariables -Headers $Headers
+
+    Write-Output "Legal Hold Application Result: $($legalHoldResult | ConvertTo-Json -Compress)"
+
     return $legalHoldResult
 }
 
@@ -113,7 +125,7 @@ $snappableIds = Get-Content $snappableIdsFilePath
 
 # Define the date range for filtering
 $startDate = Get-Date "2024-05-19T00:00:00Z"
-$endDate = Get-Date "2024-05-23T23:59:59Z"
+$endDate = Get-Date "2024-05-21T23:59:59Z"
 
 # Iterate over each snappable ID
 foreach ($snappableId in $snappableIds) {
@@ -140,7 +152,7 @@ foreach ($snappableId in $snappableIds) {
         $legalHoldResult = Place-OnLegalHold -snapshotFids $snapshotFids -shouldHoldInPlace $true -userNote "" -Headers $headers
         # Output the result
         Write-Output "Legal hold applied for snappable ID: $snappableId"
-        Write-Output "Result: $($legalHoldResult)"
+        Write-Output "Result: $($legalHoldResult | ConvertTo-Json -Compress)"
     } else {
         Write-Output "No snapshots found in the specified date range for snappable ID: $snappableId"
     }

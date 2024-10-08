@@ -1,6 +1,8 @@
-#This script applies legal hold on all snaps for one snappable FID. Modify line 106 to provide snappale FID.
+# This script applies legal hold on snaps between specific dates for one snappable FID. Modify line 110 and 111 as required date and time. 
+# Modify line 6, 44, 108, 112 and 113 as required.
+# You will need a service account created with Administrator role and please set the execution policy on your system running powershell as required.
 
-# Import Service Account Info
+# Import Service Account Info (For Windows path: C:\Users\Username\Desktop\File.json)
 $ServiceAccountFilePath = "/Users/Deepender.Singh/Downloads/deepender.json"
 $ServiceAccount = Get-Content $ServiceAccountFilePath | ConvertFrom-Json
 
@@ -103,19 +105,31 @@ mutation PlaceOnLegalHoldMutation(`$snapshotFids: [String!]!, `$shouldHoldInPlac
 }
 
 # Retrieve snapshot FIDs and dates for a given snappable ID
-$snappableId = "eb4572df-1bdb-5641-929b-f232bf2d0cb0"
+$snappableId = "56c6a401-0faf-538a-b29b-9f99105422d3"
 $snapshots = Get-SnapshotFids -snappableId $snappableId -Headers $headers
 
-# Output the snapshot details
-foreach ($snapshot in $snapshots) {
+# Define the date range for filtering
+$startDate = Get-Date "2024-05-19T00:00:00Z"
+$endDate = Get-Date "2024-05-23T23:59:59Z"
+
+# Filter snapshots based on the date range
+$filteredSnapshots = $snapshots | Where-Object {
+    ($_.date -ge $startDate) -and ($_.date -le $endDate)
+}
+
+# Output the filtered snapshot details
+foreach ($snapshot in $filteredSnapshots) {
     Write-Output "Snapshot ID: $($snapshot.id), Date: $($snapshot.date)"
 }
 
-# Extract snapshot IDs for the mutation
-$snapshotFids = $snapshots | ForEach-Object { $_.id }
+# Extract filtered snapshot IDs for the mutation
+$snapshotFids = $filteredSnapshots | ForEach-Object { $_.id }
 
 # Place the snapshots on legal hold
-$legalHoldResult = Place-OnLegalHold -snapshotFids $snapshotFids -shouldHoldInPlace $true -userNote "" -Headers $headers
-
-# Output the result
-$legalHoldResult
+if ($snapshotFids.Count -gt 0) {
+    $legalHoldResult = Place-OnLegalHold -snapshotFids $snapshotFids -shouldHoldInPlace $true -userNote "" -Headers $headers
+    # Output the result
+    $legalHoldResult
+} else {
+    Write-Output "No snapshots found in the specified date range."
+}
