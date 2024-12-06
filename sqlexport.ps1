@@ -1,3 +1,5 @@
+#CDM based script
+
 Import-Module Rubrik
 
 # Source variables
