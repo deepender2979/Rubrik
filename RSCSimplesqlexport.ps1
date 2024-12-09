@@ -100,12 +100,12 @@ mutation MssqlDatabaseExportMutation($input: ExportMssqlDatabaseInput!) {
 # Variables for the mutation
 $variables = @{
     "input" = @{
-        "id" = "3cf776b6-a3b8-5d15-a693-47adb38c2a50"
+        "id" = "3cf776b6-a3b8-5d15-a693-47adb38c2a50" # Use the appropriate database ID from RSC URL
         "config" = @{
             "recoveryPoint" = @{
                 "date" = $recoveryPointDate
             }
-            "targetInstanceId" = "269c0afc-f9b9-51cf-9b79-5ee4f56e4344"
+            "targetInstanceId" = "269c0afc-f9b9-51cf-9b79-5ee4f56e4344" #INSTANCE_ID_FROM_RSC_URL
             "targetDatabaseName" = "master23"
             "targetDataFilePath" = "c:/temp"
             "targetLogFilePath" = "c:/temp"
