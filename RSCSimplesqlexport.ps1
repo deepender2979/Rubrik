@@ -1,6 +1,7 @@
-#RSC Script to export Sql Database with latest recovery point available. Modify line 4, 42, 63 and 108 to 114 as required. 
+#RSC Script to export Sql Database with latest recovery point available. Modify line 4, 49 and 112 to 118 as required. 
 
 # Path for service account JSON file downloaded from RSC (For Windows path: C:\Users\Username\Desktop\File.json)
+# Paths and service account information
 $ServiceAccountFilePath = "/Users/Deepender.Singh/Downloads/deepender.json"
 $ServiceAccount = Get-Content $ServiceAccountFilePath | ConvertFrom-Json
 
@@ -44,6 +45,9 @@ function Invoke-GraphQL {
     return $response
 }
 
+# Get the fid for the MSSQL database from RSC URL
+$fid = "3cf776b6-a3b8-5d15-a693-47adb38c2a50"
+
 # GraphQL query for recoverable ranges
 $recoverableRangesQuery = @'
 query MssqlDatabaseRecoverableRangesQuery($fid: String!) {
@@ -60,7 +64,7 @@ query MssqlDatabaseRecoverableRangesQuery($fid: String!) {
 
 # Variables for the query
 $recoverableRangesVariables = @{
-    "fid" = "3cf776b6-a3b8-5d15-a693-47adb38c2a50"  # Use the appropriate database ID
+    "fid" = $fid
 }
 
 # Call the GraphQL function to get recoverable ranges
@@ -100,13 +104,13 @@ mutation MssqlDatabaseExportMutation($input: ExportMssqlDatabaseInput!) {
 # Variables for the mutation
 $variables = @{
     "input" = @{
-        "id" = "3cf776b6-a3b8-5d15-a693-47adb38c2a50" # Use the appropriate database ID from RSC URL
+        "id" = $fid
         "config" = @{
             "recoveryPoint" = @{
                 "date" = $recoveryPointDate
             }
-            "targetInstanceId" = "269c0afc-f9b9-51cf-9b79-5ee4f56e4344" #INSTANCE_ID_FROM_RSC_URL
-            "targetDatabaseName" = "master23"
+            "targetInstanceId" = "269c0afc-f9b9-51cf-9b79-5ee4f56e4344" #Instance ID from RSC URL
+            "targetDatabaseName" = "master_deep"
             "targetDataFilePath" = "c:/temp"
             "targetLogFilePath" = "c:/temp"
             "targetFilePaths" = @()
