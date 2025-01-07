@@ -123,9 +123,12 @@ mutation PlaceOnLegalHoldMutation(`$snapshotFids: [String!]!, `$shouldHoldInPlac
 $snappableIdsFilePath = "/Users/Deepender.Singh/Downloads/snappableIds.txt"
 $snappableIds = Get-Content $snappableIdsFilePath
 
-# Define the date range for filtering
-$startDate = Get-Date "2024-05-19T00:00:00Z"
-$endDate = Get-Date "2024-05-21T23:59:59Z"
+# Define the time zone offset for MST in hours
+$timeZoneOffsetMST = -7
+
+# Define the date range for filtering in UTC
+$startDateUTC = Get-Date "2024-05-19T00:00:00Z"
+$endDateUTC = Get-Date "2024-05-21T23:59:59Z"
 
 # Iterate over each snappable ID
 foreach ($snappableId in $snappableIds) {
@@ -136,12 +139,16 @@ foreach ($snappableId in $snappableIds) {
 
     # Filter snapshots based on the date range
     $filteredSnapshots = $snapshots | Where-Object {
-        ($_.date -ge $startDate) -and ($_.date -le $endDate)
+        # Convert snapshot date from MST to UTC
+        $snapshotDateUTC = [datetime]::Parse($_.date).AddHours(-$timeZoneOffsetMST)
+        ($snapshotDateUTC -ge $startDateUTC) -and ($snapshotDateUTC -le $endDateUTC)
     }
 
     # Output the filtered snapshot details
     foreach ($snapshot in $filteredSnapshots) {
-        Write-Output "Snapshot ID: $($snapshot.id), Date: $($snapshot.date)"
+        # Convert snapshot date from MST to UTC for the output
+        $snapshotDateUTC = [datetime]::Parse($snapshot.date).AddHours(-$timeZoneOffsetMST)
+        Write-Output "Snapshot ID: $($snapshot.id), Date (UTC): $snapshotDateUTC"
     }
 
     # Extract filtered snapshot IDs for the mutation
